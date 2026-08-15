@@ -1,0 +1,14 @@
+{
+  "name": "dsh-vision-free-eyes",
+  "version": "0.1.0",
+  "description": "Model-facing vision tool for DeepSeek Harness: free GLM-4V image understanding via the deepseek-free-eyes CLI.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.5"
+  }
+}

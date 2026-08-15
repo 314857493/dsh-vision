@@ -1,0 +1,15 @@
+# dsh-vision-free-eyes — profile patch 模板
+# 把本文件内容合并进 $DSH_HOME/profiles/<profile>/cordis.patch.yml（Web 默认 profile 是 web）。
+# 改完后由 watchUserPatches 实时重放生效（Windows 上等 1~2 秒后刷新浏览器页面即可）。
+
+# ⚠️ Windows 上插件 name 必须是 file:/// URL：
+#    DSH 的 Loader 用原生 import() 加载插件行，`D:/xxx` 盘符路径会报
+#    ERR_UNSUPPORTED_ESM_URL_SCHEME；Linux/macOS 用 /abs/path/to/index.js。
+# 把下面两个路径替换成你实际的插件目录。
+
+- insert:
+    - id: tool-vision
+      name: file:///D:/tools/dsh-vision-free-eyes/packages/vision-tool/index.js
+
+    - id: vision-proxy-route
+      name: file:///D:/tools/dsh-vision-free-eyes/packages/vision-route/index.js

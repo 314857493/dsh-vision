@@ -1,0 +1,10 @@
+# dependencies (pnpm)
+node_modules/
+
+# local test artifacts
+.tmp/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

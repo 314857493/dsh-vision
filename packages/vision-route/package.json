@@ -1,0 +1,14 @@
+{
+  "name": "dsh-vision-proxy-route",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness route wrapper: declares image input and transcribes pasted images via free Zhipu GLM vision models before delegating to the DeepSeek adapter.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-llm": "^0.1.0-rc.5"
+  }
+}
