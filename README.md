@@ -11,7 +11,7 @@ Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it
 | 组件 | 作用 |
 |---|---|
 | **deepseek-vision 路由**（`packages/vision-route`） | 注册新模型组「DeepSeek + 自动识图」：声明图像输入（`inputModalities: ['text','image']`），贴图在请求流里被 GLM 自动转译成文字，再委派给真正的 DeepSeek 适配器 |
-| **vision 工具**（`packages/vision-tool`） | 模型可对磁盘上的图片路径直接调用的 `vision(image, question)` 工具（封装 `vision` CLI） |
+| **vision 工具**（`packages/vision-tool`） | 模型可对磁盘上的图片路径直接调用的 `vision(image, question)` 工具（直连 GLM API，无需外部 CLI） |
 | **vision-free-eyes skill**（`skill/`） | 教模型「何时 / 怎么用」视觉能力的指令文件 |
 
 - 免费默认：智谱 GLM 免费通道（`glm-4v-flash` → `glm-4.6v-flash` → `glm-4.1v-thinking-flash` 自动降级链），只需一个免费申请的 GLM key。
@@ -44,7 +44,7 @@ DeepSeek 基于文字作答
    │
    ▼
 模型调用 vision 工具（vision-tool）
-   │  执行 vision.exe（deepseek-free-eyes CLI，含 GLM 降级链 + 本地缓存）
+   │  直连 GLM API（glm-4v-flash 降级链 + 进程内缓存）
    ▼
 文字描述 → 模型整合进回答
 ```
@@ -54,10 +54,6 @@ DeepSeek 基于文字作答
 ### 前提
 
 - DeepSeek Harness `0.1.0-rc.5` / `rc.6`（本方案在 rc.5 上实测通过）
-- [deepseek-free-eyes](https://github.com/SolicitousMonkey/deepseek-free-eyes) CLI（`vision` 工具用；**可选**——没装时 `image`/`ocr` 自动回退直连 GLM；贴图转译路由不依赖它，直接调 GLM API）：
-  ```sh
-  uv tool install git+https://github.com/SolicitousMonkey/deepseek-free-eyes
-  ```
 - 智谱 GLM 免费 key（[open.bigmodel.cn](https://open.bigmodel.cn) 注册即得，格式 `id.secret`），配置方式（任选其一）：
   - 环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`；或
   - Windows 用户环境变量（`setx GLM_API_KEY "..."`，插件会自动读注册表 `HKCU\Environment`）
@@ -132,9 +128,9 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 
 | 环境变量 / config | 默认 | 说明 |
 |---|---|---|
-| `VISION_BIN`（或 config `bin`） | `vision`（PATH 查找） | vision CLI 可执行文件路径 |
-| `GLM_API_KEY` / `ZHIPU_API_KEY` | — | GLM key（vision CLI 也会自行读 Windows 注册表；回退模式必需） |
-| config `fallback` | `true` | CLI 缺失时 `image`/`ocr` 自动回退直连 GLM；设 `false` 关闭 |
+| `GLM_API_KEY` / `ZHIPU_API_KEY` | — | GLM key（Windows 也自动读注册表） |
+| config `apiKeyEnv` | `GLM_API_KEY` / `ZHIPU_API_KEY` | 自定义 key 的环境变量名（可传数组） |
+| config `no_cache` | `false` | 跳过进程内结果缓存，强制重新请求 |
 
 ## 兼容性
 
@@ -150,7 +146,6 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 
 ## 致谢
 
-- [deepseek-free-eyes](https://github.com/SolicitousMonkey/deepseek-free-eyes) —— `vision` CLI（工具插件的执行后端），MIT。
 - 智谱 GLM 免费视觉模型（glm-4v-flash 系列）。
 - DeepSeek Harness 插件体系（profile patch / `watchUserPatches` / `ctx.llm`）。
 

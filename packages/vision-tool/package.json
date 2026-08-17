@@ -1,7 +1,7 @@
 {
   "name": "dsh-vision-free-eyes",
   "version": "0.1.0",
-  "description": "DeepSeek Harness plugin: a model-facing `vision` tool that describes image files via the free Zhipu GLM vision models (deepseek-free-eyes CLI wrapper).",
+  "description": "DeepSeek Harness plugin: a model-facing `vision` tool that describes and OCRs image files by calling the free Zhipu GLM vision API directly (no external CLI required).",
   "license": "MIT",
   "keywords": [
     "dsh",

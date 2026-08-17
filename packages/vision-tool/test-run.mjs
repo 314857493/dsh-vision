@@ -1,6 +1,6 @@
 // vision-tool 冒烟测试（独立运行，不依赖 harness）。
 // 用法: node test-run.mjs [图片路径]
-// 需要 vision CLI 在 PATH 或设置 VISION_BIN；需要 GLM_API_KEY。
+// 需要 GLM_API_KEY（或 ZHIPU_API_KEY）。
 import { apply } from './index.js'
 
 const imagePath = process.argv[2] || ''
@@ -14,20 +14,21 @@ if (!tool) throw new Error('vision tool not registered')
 
 const sig = (ms) => AbortSignal.timeout(ms)
 
-console.log('\n== 1. status ==')
-try {
-  console.log(await tool.execute({ mode: 'status' }, { signal: sig(30000) }))
-} catch (e) {
-  console.log('ERROR:', e.message)
-}
-
 if (imagePath) {
-  console.log(`\n== 2. image (${imagePath}) ==`)
+  console.log(`\n== 1. image (${imagePath}) ==`)
   try {
     console.log(await tool.execute({ image: imagePath, question: '这张图片里有什么？用中文回答。' }, { signal: sig(120000) }))
   } catch (e) {
     console.log('ERROR:', e.message)
   }
+  console.log('\n== 2. ocr (cached second call) ==')
+  try {
+    console.log(await tool.execute({ image: imagePath, mode: 'ocr' }, { signal: sig(120000) }))
+  } catch (e) {
+    console.log('ERROR:', e.message)
+  }
+} else {
+  console.log('no image path given; pass one as argv[2] to run image/ocr calls')
 }
 
 console.log('\nDONE')
