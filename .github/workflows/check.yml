@@ -14,12 +14,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: 模块形态冒烟测试（vision-tool）
-        run: node test-module.mjs
+      - name: 模块形态检查（vision-tool，零依赖）
+        run: node test-shape.mjs
         working-directory: packages/vision-tool
 
-      - name: 模块形态冒烟测试（vision-route）
-        run: node test-module.mjs
+      - name: 模块形态检查（vision-route，零依赖）
+        run: node test-shape.mjs
         working-directory: packages/vision-route
 
       - name: 发布内容校验（vision-tool）
