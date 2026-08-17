@@ -1,0 +1,11 @@
+# dsh-vision-free-eyes bundle patch (vision tool package)
+#
+# Installed through the official CLI:
+#
+#   dsh plugin --profile <name> add dsh-vision-free-eyes
+#
+# The profile boot merges this patch (a single `insert` of the host plugin
+# row): the model-facing `vision` tool becomes available on every route.
+- insert:
+    - id: dsh-vision-free-eyes
+      name: dsh-vision-free-eyes

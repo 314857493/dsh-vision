@@ -62,7 +62,26 @@ DeepSeek 基于文字作答
   - 环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`；或
   - Windows 用户环境变量（`setx GLM_API_KEY "..."`，插件会自动读注册表 `HKCU\Environment`）
 
-### 步骤
+### 通过 npm 安装（推荐）
+
+两个包发布到 npm 后（`dsh-vision-free-eyes` + `dsh-vision-proxy-route`）：
+
+```sh
+dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
+```
+
+`dsh plugin add` 会安装包并写入 profile 的 `dsh.profile.bundles`，重启 `dsh web`（或刷新页面）后生效。
+包已装入 profile 的前提下，也可以直接在 profile 的 `cordis.patch.yml` 里用包名挂载（热生效，无需重启）：
+
+```yaml
+- insert:
+    - id: dsh-vision-free-eyes
+      name: dsh-vision-free-eyes
+    - id: dsh-vision-proxy-route
+      name: dsh-vision-proxy-route
+```
+
+### 手动安装（备选：未发布 / 本地目录）
 
 1. 把 `packages/vision-tool` 和 `packages/vision-route` 放到你的机器上（例如 `D:\tools\`）。
 
