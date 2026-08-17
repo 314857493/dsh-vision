@@ -54,7 +54,7 @@ DeepSeek 基于文字作答
 ### 前提
 
 - DeepSeek Harness `0.1.0-rc.5` / `rc.6`（本方案在 rc.5 上实测通过）
-- [deepseek-free-eyes](https://github.com/SolicitousMonkey/deepseek-free-eyes) CLI（`vision` 工具用；贴图转译路由不依赖它，直接调 GLM API）：
+- [deepseek-free-eyes](https://github.com/SolicitousMonkey/deepseek-free-eyes) CLI（`vision` 工具用；**可选**——没装时 `image`/`ocr` 自动回退直连 GLM；贴图转译路由不依赖它，直接调 GLM API）：
   ```sh
   uv tool install git+https://github.com/SolicitousMonkey/deepseek-free-eyes
   ```
@@ -130,10 +130,11 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 
 ### vision-tool（`packages/vision-tool/index.js`）
 
-| 环境变量 | 默认 | 说明 |
+| 环境变量 / config | 默认 | 说明 |
 |---|---|---|
-| `VISION_BIN` | `vision`（PATH 查找） | vision CLI 可执行文件路径 |
-| `GLM_API_KEY` / `ZHIPU_API_KEY` | — | GLM key（vision CLI 也会自行读 Windows 注册表） |
+| `VISION_BIN`（或 config `bin`） | `vision`（PATH 查找） | vision CLI 可执行文件路径 |
+| `GLM_API_KEY` / `ZHIPU_API_KEY` | — | GLM key（vision CLI 也会自行读 Windows 注册表；回退模式必需） |
+| config `fallback` | `true` | CLI 缺失时 `image`/`ocr` 自动回退直连 GLM；设 `false` 关闭 |
 
 ## 兼容性
 

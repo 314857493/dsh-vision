@@ -20,9 +20,11 @@ dsh plugin --profile web add dsh-vision-free-eyes
 
 ## 前提
 
-- `vision` CLI 在 PATH 上（`uv tool install git+https://github.com/SolicitousMonkey/deepseek-free-eyes`），
-  或设置环境变量 `VISION_BIN` 指向可执行文件。
-- 智谱 GLM 免费 key：环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`（Windows 也可 `setx`，CLI 自动读注册表）。
+- **必须**：智谱 GLM 免费 key，环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`（Windows 也可 `setx`，自动读注册表）。
+- **可选**：`vision` CLI（`uv tool install git+https://github.com/SolicitousMonkey/deepseek-free-eyes`），
+  或设置环境变量 `VISION_BIN` / 插件 config `bin` 指向可执行文件。
+  - **没装 CLI 也能用**：`image` / `ocr` 模式自动回退到直连 GLM API（多一次请求、无本地缓存）；
+    `doc` / `status` 模式需要 CLI。config `fallback: false` 可关闭回退。
 
 ## 使用
 
