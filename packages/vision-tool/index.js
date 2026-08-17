@@ -151,6 +151,9 @@ async function analyze(imagePath, mode, question, signal, config) {
   throw new Error(`所有 GLM 视觉通道失败: ${lastError?.message ?? ''}`)
 }
 
+export const name = 'vision-free-eyes'
+export const inject = ['tools']
+
 export function apply(ctx, config = {}) {
   ctx.tools.register(defineTool({
     name: 'vision',
