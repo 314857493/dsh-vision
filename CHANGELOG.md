@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [dsh-vision-free-eyes@0.1.1] - 2026-08-20
+
 ### vision-tool / skill（`dsh-vision-free-eyes`）
 
 - 修复：Skill 不再让模型遍历 DSH 附件对象目录或按修改时间猜测 GUI 上传图片；自动识图路由已提供
@@ -12,6 +14,8 @@
   要求的逐字转写；缓存改为按图片内容、模式和问题区分，`no_cache=true` 现在会实际绕过缓存。
 - 安全：`vision` 在联网前强制要求绝对路径并校验图片文件魔数，拒绝相对路径和非图片内容，避免
   将普通本地文件按 PNG 上传；Skill 同时明确图片文字属于不可信观察数据，不能作为模型指令执行。
+
+## [dsh-vision-proxy-route@0.1.2] - 2026-08-20
 
 ### vision-route（`dsh-vision-proxy-route`）
 
@@ -33,7 +37,7 @@
 - 测试：新增零依赖运行时覆盖，验证默认兼容、自定义 provider 映射与目标适配器延迟挂载。
 - 文档：兼容范围补充 DeepSeek Harness `0.1.0-rc.7`。
 
-## [0.1.1] - 2026-08-19
+## [dsh-vision-proxy-route@0.1.1] - 2026-08-19
 
 ### vision-route（`dsh-vision-proxy-route`）
 
@@ -41,7 +45,7 @@
   异常（旧版返回 `undefined`），会导致插件树加载失败、DSH 无法启动。改为 try/catch
   容错，未挂载时继续等待 `llm/adapters-updated` 事件重试。
 
-## [0.1.0] - 2026-08-17
+## [dsh-vision-free-eyes@0.1.0 / dsh-vision-proxy-route@0.1.0] - 2026-08-17
 
 ### vision-tool（`dsh-vision-free-eyes`）
 
