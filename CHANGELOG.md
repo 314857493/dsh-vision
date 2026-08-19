@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [dsh-vision-free-eyes@0.1.2] - 2026-08-20
+
 ### vision-tool / skill（`dsh-vision-free-eyes`）
 
 - 优化：根据真实会话收紧单文件边界；目录路径不再触发底层 `EISDIR`，Skill 禁止先用 shell 预检
