@@ -14,6 +14,22 @@ Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it
 | **vision 工具**（`packages/vision-tool`） | 模型可对已知磁盘图片路径调用的 `vision(image, question)` 完整视觉理解工具（直连 GLM API；OCR 仅为可选模式） |
 | **vision-free-eyes skill**（`skill/`） | 教模型「何时 / 怎么用」视觉能力的指令文件 |
 
+### 两个插件如何配合
+
+`dsh-vision-proxy-route` 和 `dsh-vision-free-eyes` 不是重复功能，而是覆盖两种互补的图片入口：
+
+| 使用场景 | 负责组件 | 处理方式 |
+|---|---|---|
+| 在 DSH Web GUI 中粘贴或上传图片 | `dsh-vision-proxy-route` | 在主模型收到请求前自动读取 attachment、调用 GLM，并把图片描述注入对话；无需主模型主动调用工具 |
+| 用户提供磁盘图片的绝对路径 | `dsh-vision-free-eyes` | 主模型调用 `vision(image, question)`，直接分析该本地图片；任何模型路由均可使用 |
+| GUI 图片的后续追问 | `dsh-vision-proxy-route` | 复用历史 attachment，并根据“上一张 / 第一张 / 两张对比”等当前问题重新分析 |
+
+推荐同时安装两个包：GUI 贴图自动走 route，本地路径自动走 tool，共用同一个
+`GLM_API_KEY` / `ZHIPU_API_KEY`。Skill 负责告诉主模型如何选择：如果 route 已经提供图片描述，
+就直接使用，不再重复调用 `vision`；只有用户给出已知本地绝对路径时才使用 tool。
+
+它们也可以单独安装：只需要 GUI 贴图时安装 route；只需要分析本地图片路径时安装 tool。
+
 - 免费默认：智谱 GLM 免费通道（`glm-4v-flash` → `glm-4.6v-flash` → `glm-4.1v-thinking-flash` 自动降级链），只需一个免费申请的 GLM key。
 - 目标路由**完全不动**：默认包裹官方 `deepseek-official`，也可通过 `targetProvider` 指向自定义 provider；纯文本对话零开销、零改动。
 - 无重启热生效：插件行写入 profile 的 `cordis.patch.yml` 后由 `watchUserPatches` 实时重放（见安装步骤；Windows 上插件路径必须用 `file:///` URL）。
