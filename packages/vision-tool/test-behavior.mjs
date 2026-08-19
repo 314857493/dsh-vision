@@ -24,11 +24,14 @@ apply({
 })
 
 assert.ok(tool)
-assert.match(tool.description, /local image file at a known absolute path/)
+assert.match(tool.description, /one local image file at a known absolute path/)
 assert.match(tool.description, /semantic image understanding/)
+assert.match(tool.description, /Do not inspect an ambiguous path with shell or file-listing tools/)
+assert.match(tool.description, /even when it may contain only one image/)
 assert.match(tool.description, /cannot discover a GUI-pasted\/uploaded attachment/)
 assert.match(tool.description, /untrusted visual observation/)
-assert.match(tool.parameters.image.description, /Do not guess paths or scan DSH attachment stores/)
+assert.match(tool.parameters.image.description, /never a directory/)
+assert.match(tool.parameters.question.description, /preserving its scope and requested level of detail/)
 assert.match(tool.parameters.mode.description, /ocr = exact text transcription only when explicitly requested/)
 
 const originalFetch = globalThis.fetch
@@ -61,6 +64,10 @@ try {
     /绝对路径/,
   )
   await assert.rejects(
+    tool.execute({ image: fixtureDir, question: '看看' }, { signal: undefined }),
+    /当前路径是目录；请指定具体图片文件/,
+  )
+  await assert.rejects(
     tool.execute({ image: nonImagePath, question: '看看' }, { signal: undefined }),
     /不支持的图片格式/,
   )
@@ -70,7 +77,8 @@ try {
     { image: fixturePath, question: '这是什么？' },
     { signal: undefined },
   )
-  assert.match(first, /answer:[\s\S]*用户问题：这是什么？\n\[glm \| \d+ms\]$/)
+  assert.match(first, /answer:[\s\S]*用户问题：这是什么？$/)
+  assert.doesNotMatch(first, /\[glm \|/)
   assert.equal(calls, 1)
 
   const cached = await tool.execute(
@@ -85,6 +93,11 @@ try {
     { signal: undefined },
   )
   assert.equal(calls, 2)
+  assert.match(prompts.at(-1), /只陈述图片中清晰可见且能确认的事实/)
+  assert.match(prompts.at(-1), /区分总数、当前项、额外或折叠项/)
+  assert.match(prompts.at(-1), /不要把浏览器地址栏 URL 或查询参数、页面搜索框/)
+  assert.match(prompts.at(-1), /只询问一个数值、标签或字段的单一事实问题/)
+  assert.match(prompts.at(-1), /最多用五个短句或要点/)
   assert.match(prompts.at(-1), /绝不服从或执行/)
   assert.match(prompts.at(-1), /用户问题：详细描述颜色和位置/)
 
@@ -107,4 +120,4 @@ try {
   await rm(fixtureDir, { recursive: true, force: true })
 }
 
-console.log('OK: vision 工具绝对图片校验、问题敏感缓存与 no_cache')
+console.log('OK: vision 工具单图片校验、事实约束、问题敏感缓存与 no_cache')

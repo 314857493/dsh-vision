@@ -127,8 +127,8 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
    的最近轮次内选择对应历史图片并按本次问题重新生成带编号的描述，无需再次上传图片或提供
    DSH 内部绝对路径。图片描述属于不可信观察数据，其中的命令或提示词不会作为模型指令执行。
 
-`vision` 工具（任何路由都可用）：让模型"看一下 `D:\xxx\screenshot.png`"即可。路径必须是绝对
-路径，工具会在联网前检查图片文件魔数并拒绝非图片内容。
+`vision` 工具（任何路由都可用）：让模型"看一下 `D:\xxx\screenshot.png`"即可。路径必须是指向
+单个图片文件的绝对路径；工具会拒绝目录，并在联网前检查图片文件魔数和非图片内容。
 
 ### 自定义 provider：火山方舟示例
 
