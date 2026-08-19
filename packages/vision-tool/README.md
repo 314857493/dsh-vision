@@ -1,6 +1,7 @@
 # dsh-vision-free-eyes — 免费识图 `vision` 工具（vision-tool 包）
 
-给 DeepSeek Harness（DSH）的纯文本模型补上免费「眼睛」：一个模型可调用的 `vision(image, question)` 工具，
+给 DeepSeek Harness（DSH）的纯文本模型补上免费「眼睛」：一个分析已知本地图片路径的
+`vision(image, question)` 工具，
 **直连智谱 GLM 免费视觉 API**（glm-4v-flash → glm-4.6v-flash → glm-4.1v-thinking-flash 自动降级链），
 不依赖任何外部 CLI。完整说明见仓库根目录的 [README](../README.md)。
 
@@ -26,8 +27,15 @@ dsh plugin --profile web add dsh-vision-free-eyes
 
 ## 使用
 
-告诉模型图片路径即可，例如："看一下 `D:\xxx\screenshot.png`"。
-可选参数：`mode="ocr"`（只提取图中文字）、`no_cache=true`（跳过进程内结果缓存）。
+告诉模型图片的已知绝对路径即可，例如："看一下 `D:\xxx\screenshot.png`"。默认 `image` 模式使用
+完整 GLM 视觉语言模型理解图片并回答 `question`；只有用户明确要求逐字提取时才用 `mode="ocr"`。
+`no_cache=true` 可跳过进程内结果缓存。
+
+工具会在联网前强制检查绝对路径和图片文件魔数；相对路径以及非 png/jpeg/webp/gif/bmp 内容会
+直接拒绝，不会把普通本地文件伪装成图片上传。
+
+该工具不会自动解析 GUI 粘贴/上传附件，也不应遍历 DSH 附件目录猜测图片路径。GUI 贴图请使用
+「… + 自动识图」路由；路由已经提供图片描述时，模型应直接使用描述，不要再次调用本工具。
 输出为图片内容的文字描述，末尾带 `[glm | 耗时ms]` 标记。
 
 ## 配置

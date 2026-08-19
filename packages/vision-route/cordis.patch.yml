@@ -5,8 +5,10 @@
 #   dsh plugin --profile <name> add dsh-vision-proxy-route
 #
 # The profile boot merges this patch (a single `insert` of the host plugin
-# row): a `deepseek-vision` route that declares image input and transcribes
-# pasted images with the free Zhipu GLM vision models before the DeepSeek call.
+# row): by default, a `deepseek-vision` route over `deepseek-official` that
+# declares image input and transcribes pasted images with the free Zhipu GLM
+# vision models. Add another plugin row with config.targetProvider/provider to
+# wrap a custom provider without replacing this default route.
 - insert:
     - id: dsh-vision-proxy-route
       name: dsh-vision-proxy-route

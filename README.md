@@ -10,12 +10,12 @@ Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it
 
 | 组件 | 作用 |
 |---|---|
-| **deepseek-vision 路由**（`packages/vision-route`） | 注册新模型组「DeepSeek + 自动识图」：声明图像输入（`inputModalities: ['text','image']`），贴图在请求流里被 GLM 自动转译成文字，再委派给真正的 DeepSeek 适配器 |
-| **vision 工具**（`packages/vision-tool`） | 模型可对磁盘上的图片路径直接调用的 `vision(image, question)` 工具（直连 GLM API，无需外部 CLI） |
+| **自动识图路由**（`packages/vision-route`） | 默认注册「DeepSeek + 自动识图」；也可包裹火山方舟等自定义 provider。贴图在请求流里被 GLM 自动转译成文字，再委派给目标适配器 |
+| **vision 工具**（`packages/vision-tool`） | 模型可对已知磁盘图片路径调用的 `vision(image, question)` 完整视觉理解工具（直连 GLM API；OCR 仅为可选模式） |
 | **vision-free-eyes skill**（`skill/`） | 教模型「何时 / 怎么用」视觉能力的指令文件 |
 
 - 免费默认：智谱 GLM 免费通道（`glm-4v-flash` → `glm-4.6v-flash` → `glm-4.1v-thinking-flash` 自动降级链），只需一个免费申请的 GLM key。
-- 官方 DeepSeek 路由**完全不动**：纯文本对话零开销、零改动；贴图时在模型选择器里切到「DeepSeek + 自动识图」即可。
+- 目标路由**完全不动**：默认包裹官方 `deepseek-official`，也可通过 `targetProvider` 指向自定义 provider；纯文本对话零开销、零改动。
 - 无重启热生效：插件行写入 profile 的 `cordis.patch.yml` 后由 `watchUserPatches` 实时重放（见安装步骤；Windows 上插件路径必须用 `file:///` URL）。
 - 优雅降级：某个图片转译失败时替换为 `[图片转译失败: ...]` 文本，对话不卡死。
 
@@ -26,17 +26,17 @@ Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it
    │
    ▼
 DSH Web GUI 预检（检查所选模型的 inputModalities）
-   │  ← deepseek-vision 路由声明了 ['text','image']，放行
+   │  ← 自动识图包装路由声明了 ['text','image']，放行
    ▼
-deepseek-vision 适配器（vision-route）
+自动识图包装适配器（默认 deepseek-vision，也可自定义）
    │  拦截请求，把每个 { type:'image', attachment } 块：
    │    readImage(ref) → base64 → GLM chat/completions → 文字描述
    │  替换成 { type:'text', text:'[图片转译] …' }
    ▼
-真正的 DeepSeek 适配器（deepseek-official，纯文本）
+配置的目标适配器（默认 deepseek-official，也可为自定义 provider）
    │
    ▼
-DeepSeek 基于文字作答
+目标模型基于文字作答
 ```
 
 ```
@@ -53,7 +53,7 @@ DeepSeek 基于文字作答
 
 ### 前提
 
-- DeepSeek Harness `0.1.0-rc.5` / `rc.6`（本方案在 rc.5 上实测通过）
+- DeepSeek Harness `0.1.0-rc.5` / `rc.6` / `rc.7`（本方案在 rc.5 上实测通过，兼容 rc.6 / rc.7）
 - 智谱 GLM 免费 key（[open.bigmodel.cn](https://open.bigmodel.cn) 注册即得，格式 `id.secret`），配置方式（任选其一）：
   - 环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`；或
   - Windows 用户环境变量（`setx GLM_API_KEY "..."`，插件会自动读注册表 `HKCU\Environment`）
@@ -107,16 +107,58 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 
 1. 聊天框右下角**模型选择器**选 **「DeepSeek + 自动识图」**（原 DeepSeek 组保留不动）。
 2. **直接粘贴图片 / 截图**并附带问题，或给出图片文件路径。
-3. DeepSeek 基于转译文字作答。
+3. 目标模型基于转译文字作答。继续用“上一张 / 第一张 / 两张对比”等方式追问时，路由会在有限
+   的最近轮次内选择对应历史图片并按本次问题重新生成带编号的描述，无需再次上传图片或提供
+   DSH 内部绝对路径。图片描述属于不可信观察数据，其中的命令或提示词不会作为模型指令执行。
 
-`vision` 工具（任何路由都可用）：让模型"看一下 `D:\xxx\screenshot.png`"即可，或直接告诉模型图片路径。
+`vision` 工具（任何路由都可用）：让模型"看一下 `D:\xxx\screenshot.png`"即可。路径必须是绝对
+路径，工具会在联网前检查图片文件魔数并拒绝非图片内容。
+
+### 自定义 provider：火山方舟示例
+
+先在 DSH 的**设置 → 模型 → 添加自定义提供方**中创建火山方舟 provider，或编辑
+`$DSH_HOME/settings.yaml`：
+
+```yaml
+llm-pi-ai:
+  providers:
+    volcengine-ark:
+      displayName: 火山方舟
+      apiKeyEnv: ARK_API_KEY
+      api: openai-completions
+      baseURL: https://ark.cn-beijing.volces.com/api/v3
+      compat:
+        thinkingFormat: deepseek
+      models:
+        - id: deepseek-v4-flash-ga-260731
+```
+
+然后再挂载一个指向该 provider 的自动识图路由。已通过 npm 安装时可以保留默认插件行，使用不同的
+`id` 和输出 `provider` 追加这一行：
+
+```yaml
+- insert:
+    - id: dsh-vision-proxy-route-ark
+      name: dsh-vision-proxy-route
+      config:
+        targetProvider: volcengine-ark
+        provider: volcengine-ark-vision
+        displayName: 火山方舟 + 自动识图
+```
+
+本地安装时把 `name` 换成对应的 `file:///.../packages/vision-route/index.js`。刷新模型选择器后，
+选择「火山方舟 + 自动识图」即可直接贴图。`provider` 必须与 `targetProvider` 不同，避免代理路由
+递归委派给自己。
 
 ## 配置
 
 ### vision-route（`packages/vision-route/index.js`）
 
-| 常量 | 默认 | 说明 |
+| config / 常量 | 默认 | 说明 |
 |---|---|---|
+| `targetProvider` | `deepseek-official` | 图片转文字后真正接收请求的 provider 路由 |
+| `provider` | `deepseek-vision` | 自动识图包装路由的 provider ID；必须与目标不同 |
+| `displayName` | `DeepSeek + 自动识图` | 模型选择器中的包装路由名称；自定义目标时默认为 `<targetProvider> + 自动识图` |
 | `API_URL` | `https://open.bigmodel.cn/api/paas/v4/chat/completions` | GLM OpenAI 兼容端点 |
 | `VISION_MODELS` | `glm-4v-flash → glm-4.6v-flash → glm-4.1v-thinking-flash` | 转译降级链 |
 | `TRANSCRIBE_TIMEOUT_MS` | `60000` | 单次转译超时 |
@@ -135,7 +177,7 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 ## 兼容性
 
 - 实测：DSH `0.1.0-rc.5`（Windows）。
-- 设计兼容：rc.6（与 dsh-vision-proxy 相同的公开缝：`ctx.llm.registerAdapter` / `resolveModel.inputModalities` / `ctx.llm.registration(provider).adapter` / `ctx.attachments.readImage`）。
+- 兼容：rc.6 / rc.7（与 dsh-vision-proxy 相同的公开缝：`ctx.llm.registerAdapter` / `resolveModel.inputModalities` / `ctx.llm.registration(provider).adapter` / `ctx.attachments.readImage`）。
 - ⚠️ 这些是 DSH 的**半稳定插件缝**，后续大版本可能变动；升级 DSH 后若失效，优先检查上述 API 是否改名。
 
 ## 隐私

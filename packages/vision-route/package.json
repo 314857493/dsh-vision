@@ -1,7 +1,7 @@
 {
   "name": "dsh-vision-proxy-route",
-  "version": "0.1.1",
-  "description": "DeepSeek Harness plugin: a `deepseek-vision` route that declares image input and transcribes pasted images via the free Zhipu GLM vision models before delegating to the DeepSeek adapter.",
+  "version": "0.1.2",
+  "description": "DeepSeek Harness plugin: a configurable provider route that transcribes pasted images via free Zhipu GLM vision models before delegating to a text-only adapter.",
   "license": "MIT",
   "keywords": [
     "dsh",
@@ -50,8 +50,8 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-llm": ">=0.1.0-rc.6",
-    "@deepseek-ai/dsh-attachment": ">=0.1.0-rc.6"
+    "@deepseek-ai/dsh-llm": ">=0.1.0-rc.5",
+    "@deepseek-ai/dsh-attachment": ">=0.1.0-rc.5"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {

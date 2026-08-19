@@ -7,9 +7,10 @@ const src = readFileSync(fileURLToPath(new URL('./index.js', import.meta.url)), 
 const checks = [
   [/export const name = 'vision-proxy-route'/, 'name 导出'],
   [/export const inject = \['llm'\]/, 'inject=llm 导出'],
+  [/export function resolveConfig\(/, 'resolveConfig 导出'],
   [/export function apply\(/, 'apply 导出'],
 ]
 for (const [re, label] of checks) {
   if (!re.test(src)) throw new Error(`缺少 ${label}`)
 }
-console.log('OK: vision-route 源码声明了 name / inject=llm / apply')
+console.log('OK: vision-route 源码声明了 name / inject=llm / resolveConfig / apply')
