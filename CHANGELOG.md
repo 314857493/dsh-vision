@@ -2,6 +2,14 @@
 
 本仓库的显著变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
+## [0.1.1] - 2026-08-19
+
+### vision-route（`dsh-vision-proxy-route`）
+
+- 修复：兼容新版 DSH——`ctx.llm.registration()` 对未挂载的 provider 现在抛 `NO_ADAPTER`
+  异常（旧版返回 `undefined`），会导致插件树加载失败、DSH 无法启动。改为 try/catch
+  容错，未挂载时继续等待 `llm/adapters-updated` 事件重试。
+
 ## [0.1.0] - 2026-08-17
 
 ### vision-tool（`dsh-vision-free-eyes`）

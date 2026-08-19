@@ -243,7 +243,16 @@ export function apply(ctx) {
   let registered = false
   const register = () => {
     if (registered) return
-    const inner = ctx.llm.registration('deepseek-official')?.adapter
+    // dsh-llm's registration() throws NO_ADAPTER for a provider whose adapter
+    // is not mounted yet (newer DSH); older versions returned undefined. Treat
+    // both the same: not mounted yet, so wait for the llm/adapters-updated
+    // event below and retry then.
+    let inner
+    try {
+      inner = ctx.llm.registration('deepseek-official')?.adapter
+    } catch {
+      inner = undefined
+    }
     if (!inner) return
     try {
       ctx.llm.registerAdapter(['deepseek-vision'], new VisionProxyAdapter(ctx, inner))
