@@ -1,10 +1,49 @@
 # dsh-vision-free-eyes
 
-给 DeepSeek Harness（DSH）里的纯文本模型补上免费「眼睛」：GUI 直接贴图自动转译 + 磁盘图片识图工具 + 使用指引 skill。底层视觉走智谱 GLM 免费模型（glm-4v-flash），无需付费。
+给 DeepSeek Harness（DSH）里的纯文本模型补上免费「眼睛」：GUI 直接贴图自动转译 + 磁盘图片识图工具 + 使用指引 skill。底层视觉走智谱 GLM 免费模型（glm-4v-flash），无需把主模型切换成视觉模型。
 
 Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it just works — the image is transcribed by a free Zhipu GLM vision model before DeepSeek sees the text.
 
 > ⚠️ **需要 GLM key（免费，但必须要有）**：识图走智谱免费模型 `glm-4v-flash`，需要去 [open.bigmodel.cn](https://open.bigmodel.cn) 注册获取免费 API key（格式 `id.secret`），配置为环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`（Windows 可直接 `setx GLM_API_KEY "你的key"`）。**没有 key 时贴图转译会失败**（对话中显示 `[图片转译失败: 未找到 GLM_API_KEY ...]`）。key 只存在于你的环境，不会进代码或仓库。
+
+## DeepSeek 官方已有 Vision，为什么还需要这个项目？
+
+DeepSeek Harness 从 [`v0.1.1-rc.1`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.1-rc.1)
+开始原生接入多模态模型 `DeepSeek-V4-Flash-Vision-Exp`，并在
+[`v0.1.1-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.1-rc.2)
+加入 Files API 图片复用和自动预处理。能使用该模型、并希望模型直接读取原始像素时，**官方原生
+Vision 是更短、信息损失更少的首选路径**。
+
+本项目不再把自己定位成“DSH 没有 Vision 时的临时替代”，而是一个面向**纯文本主模型的视觉
+旁路**：让视觉模型只负责看图，原来的 DeepSeek V4 Flash / Pro 或自定义 provider 继续负责推理、
+写代码和调用工具。它仍有以下差异化价值：
+
+- **主模型与视觉模型解耦**：不必为了偶尔看一张图，把整个会话切到
+  `DeepSeek-V4-Flash-Vision-Exp`；图片转成视觉证据后，目标模型和目标路由保持不变。
+- **不只服务 DeepSeek 官方路由**：`targetProvider` 可以包裹任何已注册的纯文本 provider，已经
+  配好的火山方舟、公司网关或其他 OpenAI 兼容路由都能继续使用。
+- **识图侧默认免费**：视觉工作走 GLM Flash 免费模型降级链，只需单独申请 GLM key；适合图片占比
+  低、希望把视觉成本与主模型账单分开的工作流。免费额度与可用性以智谱当前政策为准。
+- **补齐两种图片入口**：route 处理 Web GUI 粘贴/上传的 attachment；tool 处理已知绝对路径的
+  本地图片。后者可在任何模型路由下调用，不要求当前主模型原生支持图片。
+- **针对多轮追问重新看图**：能理解“上一张 / 第一张 / 两张对比”等指代，复用历史 attachment，
+  并带着本轮问题重新分析所选图片，而不是只依赖第一次生成的泛化描述。
+- **面向文本模型优化上下文**：目标模型只接收简洁的中文视觉证据，不接收 base64 或图片载荷；
+  同图同问题使用进程内缓存。代价是转译可能丢失细节，要求最高保真度时应选官方原生 Vision。
+- **故障隔离与自动降级**：GLM 模型按顺序自动回退；缺 Key、限流或网络失败不会永久进入缓存，
+  单图失败会变成可见文本标记，不让整轮对话静默卡死。
+- **额外的图片信任边界**：图片中的命令、链接和提示词会被标记为不可信视觉数据，只作为观察
+  转述给下游模型。它能降低误执行风险，但不是对间接提示词注入的绝对防护。
+
+### 怎么选
+
+| 需求 | 建议 |
+|---|---|
+| 使用 DeepSeek 官方视觉模型，追求原始图片直传和最高保真度 | 使用 DSH 官方原生 Vision |
+| 保留 DeepSeek V4 Flash / Pro 或其他纯文本主模型，只在需要时看图 | 使用本项目的自动识图 route |
+| 从任意模型路由分析一个已知绝对路径的本地图片 | 使用本项目的 `vision` tool |
+| 不希望图片上传到第三方视觉服务 | 使用官方 Vision；本项目会把图片上传到智谱 |
+| 同时有高保真和低成本需求 | 两者并存：复杂图片切官方 Vision，日常截图走本项目 |
 
 ## 特性
 
