@@ -21,8 +21,11 @@ dsh plugin --profile web add dsh-vision-proxy-route
 
 ## 前提
 
-- DSH `0.1.0-rc.5` / `rc.6` / `rc.7`（依赖 `ctx.llm.registerAdapter` / `registration(provider).adapter` / `resolveModel.inputModalities` / `ctx.attachments.readImage` 这些插件缝）
+- DSH `0.1.0-rc.8`、`0.1.1-rc.1` 或 `0.1.1-rc.2`（均通过一次性 Web Profile 安装、启动与卸载验收）
 - 智谱 GLM 免费 key：环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`（Windows 也可 `setx GLM_API_KEY "id.secret"`，插件自动读注册表）
+
+插件通过 DSH 注入的 `llm` / `attachments` 服务使用结构化 adapter 契约，不安装或直接导入
+`@deepseek-ai/dsh-llm`、`@deepseek-ai/dsh-attachment` 等官方运行时包。
 
 ## 使用
 

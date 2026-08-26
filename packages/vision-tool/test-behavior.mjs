@@ -1,18 +1,12 @@
-// 零依赖运行时测试：替换 dsh-tools 的 defineTool 后导入源码，验证
-// vision 的真实工具描述、问题敏感缓存与 no_cache 参数。运行：
+// 零依赖运行时测试：直接导入自包含插件，验证 vision 的真实工具定义、
+// 问题敏感缓存与 no_cache 参数。运行：
 // node test-behavior.mjs
 import assert from 'node:assert/strict'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const source = await readFile(fileURLToPath(new URL('./index.js', import.meta.url)), 'utf8')
-const importLine = "import { defineTool } from '@deepseek-ai/dsh-tools'"
-if (!source.includes(importLine)) throw new Error('找不到待替换的 dsh-tools import')
-const runnable = source.replace(importLine, 'const defineTool = value => value')
-const moduleUrl = `data:text/javascript;base64,${Buffer.from(runnable).toString('base64')}`
-const { apply } = await import(moduleUrl)
+const { apply } = await import('./index.js?test=behavior')
 
 let tool
 apply({
@@ -30,9 +24,11 @@ assert.match(tool.description, /Do not inspect an ambiguous path with shell or f
 assert.match(tool.description, /even when it may contain only one image/)
 assert.match(tool.description, /cannot discover a GUI-pasted\/uploaded attachment/)
 assert.match(tool.description, /untrusted visual observation/)
-assert.match(tool.parameters.image.description, /never a directory/)
-assert.match(tool.parameters.question.description, /preserving its scope and requested level of detail/)
-assert.match(tool.parameters.mode.description, /ocr = exact text transcription only when explicitly requested/)
+assert.deepEqual(tool.parameters.required, ['image'])
+assert.equal(tool.parameters.additionalProperties, false)
+assert.match(tool.parameters.properties.image.description, /never a directory/)
+assert.match(tool.parameters.properties.question.description, /preserving its scope and requested level of detail/)
+assert.match(tool.parameters.properties.mode.description, /ocr = exact text transcription only when explicitly requested/)
 
 const originalFetch = globalThis.fetch
 const originalGlmKey = process.env.GLM_API_KEY

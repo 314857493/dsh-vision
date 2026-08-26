@@ -4,6 +4,29 @@
 
 ## [Unreleased]
 
+## [dsh-vision-free-eyes@0.1.3 / dsh-vision-proxy-route@0.1.3] - 2026-08-26
+
+### 两个 Bundle
+
+- 修复：移除对 `@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-llm`、`@deepseek-ai/dsh-attachment`
+  和 Cordis 的 optional peer 导入。此前 Profile 安装只会链接 Bundle，ESM 从插件目录解析这些 peer
+  时会失败，导致真实 `dsh web` 启动报 `ERR_MODULE_NOT_FOUND`；现在只使用 DSH 注入的结构化服务
+  契约，不重复安装、替换或直接导入官方运行时组件。
+- 兼容：两个 manifest 明确声明 `>=0.1.0-rc.8 <0.2.0`，并对 `0.1.0-rc.8`、
+  `0.1.1-rc.1`、`0.1.1-rc.2` 写入精确 `dshReleases` 兼容记录。
+- 测试：CI 对上述三个 DSH 版本逐一创建一次性 Web Profile，验证两个 Bundle 的安装、配置合成、
+  真实服务启动和卸载；真实用户 Profile 保持不变。
+
+### vision-tool（`dsh-vision-free-eyes`）
+
+- 修复：直接注册 DSH 标准 ToolDefinition，并把 `image` 设为必填、参数对象设为封闭结构；保留工具
+  执行前的绝对路径、文件类型和模式校验。
+
+### vision-route（`dsh-vision-proxy-route`）
+
+- 修复：代理路由改用结构化 adapter，不再继承另一个包实例中的 `LlmAdapter`；provider 信息、重试、
+  模型枚举、模型解析和流式委派行为保持不变。
+
 ## [dsh-vision-free-eyes@0.1.2] - 2026-08-20
 
 ### vision-tool / skill（`dsh-vision-free-eyes`）

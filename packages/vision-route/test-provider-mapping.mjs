@@ -1,15 +1,8 @@
-// 零依赖运行时测试：把 dsh-llm 的基类替换为本地空基类后导入源码，
-// 验证默认路由、自定义 provider 映射与延迟注册。运行：
+// 零依赖运行时测试：直接导入自包含的结构化 adapter，验证默认路由、
+// 自定义 provider 映射与延迟注册。运行：
 // node test-provider-mapping.mjs
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 
-const source = readFileSync(fileURLToPath(new URL('./index.js', import.meta.url)), 'utf8')
-const importLine = "import { LlmAdapter } from '@deepseek-ai/dsh-llm'"
-if (!source.includes(importLine)) throw new Error('找不到待替换的 dsh-llm import')
-const runnable = source.replace(importLine, 'class LlmAdapter {}')
-const moduleUrl = `data:text/javascript;base64,${Buffer.from(runnable).toString('base64')}`
 const {
   apply,
   buildVisionPrompt,
@@ -18,7 +11,7 @@ const {
   resolveConfig,
   resolveImageFollowup,
   wrapVisionEvidence,
-} = await import(moduleUrl)
+} = await import('./index.js?test=provider-mapping')
 
 const sessionJsonResult = JSON.stringify({
   text: { interface_text: '', error_message: '', title: '', button_label: '' },

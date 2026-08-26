@@ -13,4 +13,7 @@ const checks = [
 for (const [re, label] of checks) {
   if (!re.test(src)) throw new Error(`缺少 ${label}`)
 }
+if (/from ['"]@deepseek-ai\//.test(src)) {
+  throw new Error('第三方 Bundle 不应直接导入 DSH 官方运行时包')
+}
 console.log('OK: vision-route 源码声明了 name / inject=llm / resolveConfig / apply')

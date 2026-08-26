@@ -21,9 +21,13 @@ dsh plugin --profile web add dsh-vision-free-eyes
 
 ## 前提
 
+- DSH `0.1.0-rc.8`、`0.1.1-rc.1` 或 `0.1.1-rc.2`。
 - **必须**：智谱 GLM 免费 key，环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`
   （[open.bigmodel.cn](https://open.bigmodel.cn) 注册即得，格式 `id.secret`；Windows 也可 `setx`，插件自动读注册表）。
 - 出站 HTTPS 到 `open.bigmodel.cn`。
+
+插件通过 DSH 注入的 `tools` 服务注册标准 ToolDefinition，不安装或直接导入
+`@deepseek-ai/dsh-tools` 等官方运行时包。
 
 ## 使用
 

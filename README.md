@@ -108,7 +108,7 @@ DSH Web GUI 预检（检查所选模型的 inputModalities）
 
 ### 前提
 
-- DeepSeek Harness `0.1.0-rc.5` / `rc.6` / `rc.7`（本方案在 rc.5 上实测通过，兼容 rc.6 / rc.7）
+- DeepSeek Harness `0.1.0-rc.8`、`0.1.1-rc.1` 或 `0.1.1-rc.2`（均通过一次性 Web Profile 的安装、启动与卸载验收）
 - 智谱 GLM 免费 key（[open.bigmodel.cn](https://open.bigmodel.cn) 注册即得，格式 `id.secret`），配置方式（任选其一）：
   - 环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`；或
   - Windows 用户环境变量（`setx GLM_API_KEY "..."`，插件会自动读注册表 `HKCU\Environment`）
@@ -231,9 +231,10 @@ llm-pi-ai:
 
 ## 兼容性
 
-- 实测：DSH `0.1.0-rc.5`（Windows）。
-- 兼容：rc.6 / rc.7（与 dsh-vision-proxy 相同的公开缝：`ctx.llm.registerAdapter` / `resolveModel.inputModalities` / `ctx.llm.registration(provider).adapter` / `ctx.attachments.readImage`）。
-- ⚠️ 这些是 DSH 的**半稳定插件缝**，后续大版本可能变动；升级 DSH 后若失效，优先检查上述 API 是否改名。
+- 精确兼容：DSH `0.1.0-rc.8`、`0.1.1-rc.1`、`0.1.1-rc.2`；CI 对每个版本创建一次性 Web Profile，完成两个 Bundle 的安装、配置合成、真实服务启动和卸载。
+- 支持范围：`>=0.1.0-rc.8 <0.2.0`；未列出的版本只有范围声明，不作为精确兼容证据。
+- 两个 Bundle 只使用 DSH 注入的 `tools` / `llm` / `attachments` 服务契约，不安装、替换或直接导入任何 `@deepseek-ai/*` 官方运行时包。
+- ⚠️ `ctx.llm.registerAdapter`、`resolveModel.inputModalities`、`ctx.llm.registration(provider).adapter`、`ctx.attachments.readImage` 仍是版本敏感接口；新增 DSH 版本必须先通过同一套一次性 Profile 验收，再加入精确矩阵。
 
 ## 隐私
 
