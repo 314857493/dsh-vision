@@ -16,6 +16,11 @@
   `0.1.1-rc.1`、`0.1.1-rc.2` 写入精确 `dshReleases` 兼容记录。
 - 测试：CI 对上述三个 DSH 版本逐一创建一次性 Web Profile，验证两个 Bundle 的安装、配置合成、
   真实服务启动和卸载；真实用户 Profile 保持不变。
+- 契约：统一 npm、本地安装示例和 Bundle Patch 的插件自有 Entry ID；manifest 明确把已验证范围
+  限定为 Web Profile，包级 README/SECURITY 披露文件、网络、命令、凭据、生命周期和证据边界。
+- 测试：两个子包新增可直接执行的 `npm test` 入口，便于 DSH STORE 合同审计和 CI 从各自
+  `manifestPath` 发现测试；rollback、真实用户 Profile、带真实 Key 的端到端结果和独立安全审计
+  保持未验证，不以低层测试替代。
 
 ### vision-tool（`dsh-vision-free-eyes`）
 

@@ -8,15 +8,15 @@
 # 把下面两个路径替换成你实际的插件目录。
 
 - insert:
-    - id: tool-vision
+    - id: dsh-vision-free-eyes
       name: file:///D:/tools/dsh-vision-free-eyes/packages/vision-tool/index.js
 
-    - id: vision-proxy-route
+    - id: dsh-vision-proxy-route
       name: file:///D:/tools/dsh-vision-free-eyes/packages/vision-route/index.js
 
 # 自定义 provider 示例（与上面的默认 deepseek-vision 行二选一，或使用不同 id 同时挂载）：
 # - insert:
-#     - id: vision-proxy-route-ark
+#     - id: dsh-vision-proxy-route-ark
 #       name: file:///D:/tools/dsh-vision-free-eyes/packages/vision-route/index.js
 #       config:
 #         targetProvider: volcengine-ark

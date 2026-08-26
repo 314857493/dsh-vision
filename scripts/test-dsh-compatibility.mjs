@@ -110,7 +110,12 @@ function assertManifestContract() {
     assert.equal(manifest.version, '0.1.3')
     assert.equal(manifest.engines?.node, '>=22')
     assert.equal(manifest.dsh?.compatibility?.dsh, '>=0.1.0-rc.8 <0.2.0')
+    assert.deepEqual(manifest.dsh?.compatibility?.profiles, ['web'])
     assert.equal(manifest.dsh?.compatibility?.dshReleases?.[release], 'compatible')
+    assert.equal(manifest.scripts?.preinstall, undefined)
+    assert.equal(manifest.scripts?.install, undefined)
+    assert.equal(manifest.scripts?.postinstall, undefined)
+    assert.equal(manifest.scripts?.prepare, undefined)
     for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
       const official = Object.keys(manifest[field] ?? {}).filter(name => name.startsWith('@deepseek-ai/'))
       assert.deepEqual(official, [], `${manifest.name} must not install or peer-import official DSH packages`)

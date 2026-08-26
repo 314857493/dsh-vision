@@ -3,7 +3,8 @@
 给 DeepSeek Harness（DSH）的纯文本模型补上免费「眼睛」：一个分析已知本地图片路径的
 `vision(image, question)` 工具，
 **直连智谱 GLM 免费视觉 API**（glm-4v-flash → glm-4.6v-flash → glm-4.1v-thinking-flash 自动降级链），
-不依赖任何外部 CLI。完整说明见仓库根目录的 [README](../README.md)。
+不依赖任何额外安装的 CLI。完整说明见仓库根目录的
+[README](https://github.com/314857493/dsh-vision#readme)。
 
 ## 安装（发布后）
 
@@ -28,6 +29,17 @@ dsh plugin --profile web add dsh-vision-free-eyes
 
 插件通过 DSH 注入的 `tools` 服务注册标准 ToolDefinition，不安装或直接导入
 `@deepseek-ai/dsh-tools` 等官方运行时包。
+
+## 权限与证据边界
+
+- 只读取调用者明确给出的一个绝对图片路径，并只向固定的智谱 HTTPS 端点发送图片字节。
+- 只读取 GLM 环境变量；Windows 环境变量缺失时使用固定参数执行系统自带的只读 `reg query`，
+  不使用 shell 字符串，也不记录或持久化 Key。
+- 无 npm 运行依赖和安装期生命周期脚本；只新增 `dsh-vision-free-eyes` Entry ID，不写 DSH Profile
+  或替换官方组件。完整边界见 [SECURITY.md](SECURITY.md)。
+- 已验证三个声明版本的一次性 Web Profile 安装、配置合成、冷启动和卸载；rollback、真实用户
+  Profile、带真实 GLM Key 的端到端结果、Windows 运行和独立安全审计仍未验证。下一验收门槛是
+  推送固定 Commit 后取得公开 CI 运行记录；这些低层证据不会被表述成真实 Profile 或安全审计通过。
 
 ## 使用
 
