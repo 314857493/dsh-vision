@@ -108,7 +108,7 @@ DSH Web GUI 预检（检查所选模型的 inputModalities）
 
 ### 前提
 
-- DeepSeek Harness `0.1.0-rc.5` / `rc.6` / `rc.7`（本方案在 rc.5 上实测通过，兼容 rc.6 / rc.7）
+- DeepSeek Harness `0.1.0-rc.8`、`0.1.1-rc.1` 或 `0.1.1-rc.2`（均通过一次性 Web Profile 的安装、启动与卸载验收）
 - 智谱 GLM 免费 key（[open.bigmodel.cn](https://open.bigmodel.cn) 注册即得，格式 `id.secret`），配置方式（任选其一）：
   - 环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`；或
   - Windows 用户环境变量（`setx GLM_API_KEY "..."`，插件会自动读注册表 `HKCU\Environment`）
@@ -139,9 +139,9 @@ dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
 2. 编辑 profile patch（`$DSH_HOME/profiles/web/cordis.patch.yml`，即 `C:\Users\<你>\.dsh\profiles\web\cordis.patch.yml`），追加：
    ```yaml
    - insert:
-       - id: tool-vision
+       - id: dsh-vision-free-eyes
          name: file:///D:/tools/vision-tool/index.js
-       - id: vision-proxy-route
+       - id: dsh-vision-proxy-route
          name: file:///D:/tools/vision-route/index.js
    ```
    > ⚠️ **Windows 必须用 `file:///` URL 形式**：DSH 的 Loader 用原生 `import()` 加载插件行，`D:/xxx` 盘符路径会报 `ERR_UNSUPPORTED_ESM_URL_SCHEME`。Linux/macOS 用 `/abs/path/to/index.js` 即可。完整模板见 [`cordis.patch.example.yml`](cordis.patch.example.yml)。
@@ -231,9 +231,27 @@ llm-pi-ai:
 
 ## 兼容性
 
-- 实测：DSH `0.1.0-rc.5`（Windows）。
-- 兼容：rc.6 / rc.7（与 dsh-vision-proxy 相同的公开缝：`ctx.llm.registerAdapter` / `resolveModel.inputModalities` / `ctx.llm.registration(provider).adapter` / `ctx.attachments.readImage`）。
-- ⚠️ 这些是 DSH 的**半稳定插件缝**，后续大版本可能变动；升级 DSH 后若失效，优先检查上述 API 是否改名。
+- 精确兼容：DSH `0.1.0-rc.8`、`0.1.1-rc.1`、`0.1.1-rc.2`；CI 对每个版本创建一次性 Web Profile，完成两个 Bundle 的安装、配置合成、真实服务启动和卸载。
+- 支持范围：`>=0.1.0-rc.8 <0.2.0`；未列出的版本只有范围声明，不作为精确兼容证据。
+- 两个 Bundle 只使用 DSH 注入的 `tools` / `llm` / `attachments` 服务契约，不安装、替换或直接导入任何 `@deepseek-ai/*` 官方运行时包。
+- ⚠️ `ctx.llm.registerAdapter`、`resolveModel.inputModalities`、`ctx.llm.registration(provider).adapter`、`ctx.attachments.readImage` 仍是版本敏感接口；新增 DSH 版本必须先通过同一套一次性 Profile 验收，再加入精确矩阵。
+
+## 权限、外部依赖与证据边界
+
+- **文件**：`dsh-vision-free-eyes` 只读取用户明确给出的单个绝对图片路径；
+  `dsh-vision-proxy-route` 只通过 DSH `attachments` 服务读取当前请求或明确追问引用的图片。
+- **网络**：图片字节只发送到固定的智谱端点
+  `https://open.bigmodel.cn/api/paas/v4/chat/completions`；主模型请求仍由用户选择的 DSH provider 处理。
+- **凭据**：只读取 `GLM_API_KEY` / `ZHIPU_API_KEY` 或 `apiKeyEnv` 指定的环境变量；Windows 下缺少
+  进程环境变量时，会用固定参数执行 `reg query HKCU\\Environment /v GLM_API_KEY`。Key 不写入
+  Profile、缓存、日志或工具结果，只作为发往智谱端点的 Authorization header。
+- **命令与生命周期**：除上述 Windows 注册表只读查询外不启动命令，不使用 shell 字符串；两个包均无
+  `preinstall`、`install`、`postinstall`、`prepare` 脚本，也没有 npm 运行依赖。
+- **DSH 边界**：Bundle 只新增 `dsh-vision-free-eyes`、`dsh-vision-proxy-route` 等插件自有 Entry ID，
+  运行时不写 Profile，不禁用、替换或遮蔽官方组件；安装和卸载交给官方 `dsh plugin` CLI。
+- **已验证**：三个声明版本的一次性 Web Profile 安装、`--dump-config`、真实冷启动和卸载。
+  **部分验证/未验证**：尚无真实用户 Profile、逐版本 rollback、带真实 GLM Key 的端到端图片结果、
+  Windows 运行和独立安全审计证据；这些状态不能由本地单元测试替代。
 
 ## 隐私
 

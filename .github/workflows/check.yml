@@ -14,20 +14,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: 模块形态检查（vision-tool，零依赖）
-        run: node test-shape.mjs
+      - name: 包级测试（vision-tool，零依赖）
+        run: npm test
         working-directory: packages/vision-tool
 
-      - name: 行为测试（vision-tool，零依赖）
-        run: node test-behavior.mjs
-        working-directory: packages/vision-tool
-
-      - name: 模块形态检查（vision-route，零依赖）
-        run: node test-shape.mjs
-        working-directory: packages/vision-route
-
-      - name: Provider 映射测试（vision-route，零依赖）
-        run: node test-provider-mapping.mjs
+      - name: 包级测试（vision-route，零依赖）
+        run: npm test
         working-directory: packages/vision-route
 
       - name: 发布内容校验（vision-tool）
@@ -37,3 +29,25 @@ jobs:
       - name: 发布内容校验（vision-route）
         run: npm pack --dry-run
         working-directory: packages/vision-route
+
+  dsh-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: DSH 0.1.0-rc.8 一次性 Profile 验收
+        run: node scripts/test-dsh-compatibility.mjs 0.1.0-rc.8
+
+      - name: DSH 0.1.1-rc.1 一次性 Profile 验收
+        run: node scripts/test-dsh-compatibility.mjs 0.1.1-rc.1
+
+      - name: DSH 0.1.1-rc.2 一次性 Profile 验收
+        run: node scripts/test-dsh-compatibility.mjs 0.1.1-rc.2

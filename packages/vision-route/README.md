@@ -21,8 +21,23 @@ dsh plugin --profile web add dsh-vision-proxy-route
 
 ## 前提
 
-- DSH `0.1.0-rc.5` / `rc.6` / `rc.7`（依赖 `ctx.llm.registerAdapter` / `registration(provider).adapter` / `resolveModel.inputModalities` / `ctx.attachments.readImage` 这些插件缝）
+- DSH `0.1.0-rc.8`、`0.1.1-rc.1` 或 `0.1.1-rc.2`（均通过一次性 Web Profile 安装、启动与卸载验收）
 - 智谱 GLM 免费 key：环境变量 `GLM_API_KEY` 或 `ZHIPU_API_KEY`（Windows 也可 `setx GLM_API_KEY "id.secret"`，插件自动读注册表）
+
+插件通过 DSH 注入的 `llm` / `attachments` 服务使用结构化 adapter 契约，不安装或直接导入
+`@deepseek-ai/dsh-llm`、`@deepseek-ai/dsh-attachment` 等官方运行时包。
+
+## 权限与证据边界
+
+- 只通过 DSH `attachments` 服务读取当前请求或明确追问引用的图片，并只向固定的智谱 HTTPS 端点
+  发送图片字节。
+- 只读取 GLM 环境变量；Windows 环境变量缺失时使用固定参数执行系统自带的只读 `reg query`，
+  不使用 shell 字符串，也不记录或持久化 Key。
+- 无 npm 运行依赖和安装期生命周期脚本；只新增 `dsh-vision-proxy-route` Entry ID，不写 DSH
+  Profile 或替换官方组件。完整边界见 [SECURITY.md](SECURITY.md)。
+- 已验证三个声明版本的一次性 Web Profile 安装、配置合成、冷启动和卸载；rollback、真实用户
+  Profile、带真实 GLM Key 的端到端结果、Windows 运行和独立安全审计仍未验证。下一验收门槛是
+  推送固定 Commit 后取得公开 CI 运行记录；这些低层证据不会被表述成真实 Profile 或安全审计通过。
 
 ## 使用
 

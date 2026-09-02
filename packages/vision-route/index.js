@@ -20,7 +20,6 @@
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { LlmAdapter } from '@deepseek-ai/dsh-llm'
 
 const execFileAsync = promisify(execFile)
 
@@ -356,9 +355,11 @@ export async function transcribeAttachment(attachments, ref, signal, prompt = PR
 
 // ---------- the adapter wrapper ----------
 
-class VisionProxyAdapter extends LlmAdapter {
+// LLM adapters are a structural DSH service contract. Keeping this adapter
+// self-contained avoids installing or importing a second copy of the official
+// @deepseek-ai/dsh-llm runtime from a third-party bundle.
+class VisionProxyAdapter {
   constructor(ctx, inner, route) {
-    super()
     this.ctx = ctx
     this.inner = inner
     this.targetProvider = route.targetProvider
