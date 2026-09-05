@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+- 修复：在两个 npm manifest 的标准 `engines.dsh` 字段同步声明 DSH 兼容范围，并补充当前 `0.1.2-rc.1` 精确兼容记录；此前仅写入 `dsh.compatibility` 时，DSH Store 的发现预检会把插件判为未声明兼容性。
+- 发布：两个包版本提升到 `0.1.4`，避免 npm 继续提供缺少标准兼容字段的 `0.1.3` 元数据。
+- 测试：包级合同测试和一次性 Profile 验收脚本现在强制校验标准字段与当前 DSH 版本记录。
+
 ## [dsh-vision-free-eyes@0.1.3 / dsh-vision-proxy-route@0.1.3] - 2026-08-26
 
 ### 两个 Bundle
