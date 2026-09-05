@@ -51,3 +51,6 @@ jobs:
 
       - name: DSH 0.1.1-rc.2 一次性 Profile 验收
         run: node scripts/test-dsh-compatibility.mjs 0.1.1-rc.2
+
+      - name: DSH 0.1.2-rc.1 一次性 Profile 验收
+        run: node scripts/test-dsh-compatibility.mjs 0.1.2-rc.1

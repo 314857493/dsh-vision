@@ -231,8 +231,9 @@ llm-pi-ai:
 
 ## 兼容性
 
-- 精确兼容：DSH `0.1.0-rc.8`、`0.1.1-rc.1`、`0.1.1-rc.2`；CI 对每个版本创建一次性 Web Profile，完成两个 Bundle 的安装、配置合成、真实服务启动和卸载。
-- 支持范围：`>=0.1.0-rc.8 <0.2.0`；未列出的版本只有范围声明，不作为精确兼容证据。
+- 精确兼容：DSH `0.1.0-rc.8`、`0.1.1-rc.1`、`0.1.1-rc.2`、`0.1.2-rc.1`；CI 对每个版本创建一次性 Web Profile，完成两个 Bundle 的安装、配置合成、真实服务启动和卸载。
+- 当前修复版本：`dsh-vision-free-eyes@0.1.4`、`dsh-vision-proxy-route@0.1.4`。
+- 支持范围：`>=0.1.0-rc.8 <0.2.0`；该范围同时声明在 npm manifest 的标准 `engines.dsh` 和 `dsh.compatibility.dsh`，未列出的版本只有范围声明，不作为精确兼容证据。
 - 两个 Bundle 只使用 DSH 注入的 `tools` / `llm` / `attachments` 服务契约，不安装、替换或直接导入任何 `@deepseek-ai/*` 官方运行时包。
 - ⚠️ `ctx.llm.registerAdapter`、`resolveModel.inputModalities`、`ctx.llm.registration(provider).adapter`、`ctx.attachments.readImage` 仍是版本敏感接口；新增 DSH 版本必须先通过同一套一次性 Profile 验收，再加入精确矩阵。
 
