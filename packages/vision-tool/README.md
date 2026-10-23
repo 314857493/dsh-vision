@@ -1,16 +1,20 @@
 # dsh-vision-free-eyes — 免费识图 `vision` 工具（vision-tool 包）
 
+[![npm version](https://img.shields.io/npm/v/dsh-vision-free-eyes.svg)](https://www.npmjs.com/package/dsh-vision-free-eyes)
+
 给 DeepSeek Harness（DSH）的纯文本模型补上免费「眼睛」：一个分析已知本地图片路径的
 `vision(image, question)` 工具，
 **直连智谱 GLM 免费视觉 API**（glm-4v-flash → glm-4.6v-flash → glm-4.1v-thinking-flash 自动降级链），
 不依赖任何额外安装的 CLI。完整说明见仓库根目录的
 [README](https://github.com/314857493/dsh-vision#readme)。
 
-## 安装（发布后）
+## 安装
 
 ```sh
 dsh plugin --profile web add dsh-vision-free-eyes
 ```
+
+npm: [https://www.npmjs.com/package/dsh-vision-free-eyes](https://www.npmjs.com/package/dsh-vision-free-eyes)
 
 或在 profile 的 `cordis.patch.yml` 中追加：
 

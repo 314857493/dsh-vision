@@ -1,15 +1,19 @@
 # dsh-vision-proxy-route — 贴图自动转译路由（vision-route 包）
 
+[![npm version](https://img.shields.io/npm/v/dsh-vision-proxy-route.svg)](https://www.npmjs.com/package/dsh-vision-proxy-route)
+
 给 DeepSeek Harness（DSH）注册一个自动识图包装路由：声明图像输入（`inputModalities: ['text','image']`），
 粘贴到 Web GUI 的图片在请求流里被免费的智谱 GLM 视觉模型（glm-4v-flash 降级链）转译成文字，再委派给真正的
 目标适配器。默认是 `deepseek-official → deepseek-vision`，也可包裹火山方舟等自定义 provider。
 完整说明见仓库根目录的 [README](../../README.md)。
 
-## 安装（发布后）
+## 安装
 
 ```sh
 dsh plugin --profile web add dsh-vision-proxy-route
 ```
+
+npm: [https://www.npmjs.com/package/dsh-vision-proxy-route](https://www.npmjs.com/package/dsh-vision-proxy-route)
 
 或在 profile 的 `cordis.patch.yml` 中追加：
 

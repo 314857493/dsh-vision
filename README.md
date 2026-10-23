@@ -1,5 +1,8 @@
 # dsh-vision-free-eyes
 
+[![npm version (dsh-vision-free-eyes)](https://img.shields.io/npm/v/dsh-vision-free-eyes.svg?label=dsh-vision-free-eyes)](https://www.npmjs.com/package/dsh-vision-free-eyes)
+[![npm version (dsh-vision-proxy-route)](https://img.shields.io/npm/v/dsh-vision-proxy-route.svg?label=dsh-vision-proxy-route)](https://www.npmjs.com/package/dsh-vision-proxy-route)
+
 给 DeepSeek Harness（DSH）里的纯文本模型补上免费「眼睛」：GUI 直接贴图自动转译 + 磁盘图片识图工具 + 使用指引 skill。底层视觉走智谱 GLM 免费模型（glm-4v-flash），无需把主模型切换成视觉模型。
 
 Eyes for text-only DeepSeek Harness agents: paste an image in the Web GUI and it just works — the image is transcribed by a free Zhipu GLM vision model before DeepSeek sees the text.
@@ -49,8 +52,8 @@ Vision 是更短、信息损失更少的首选路径**。
 
 | 组件 | 作用 |
 |---|---|
-| **自动识图路由**（`packages/vision-route`） | 默认注册「DeepSeek + 自动识图」；也可包裹火山方舟等自定义 provider。贴图在请求流里被 GLM 自动转译成文字，再委派给目标适配器 |
-| **vision 工具**（`packages/vision-tool`） | 模型可对已知磁盘图片路径调用的 `vision(image, question)` 完整视觉理解工具（直连 GLM API；OCR 仅为可选模式） |
+| **自动识图路由**（[`dsh-vision-proxy-route`](https://www.npmjs.com/package/dsh-vision-proxy-route) / `packages/vision-route`） | 默认注册「DeepSeek + 自动识图」；也可包裹火山方舟等自定义 provider。贴图在请求流里被 GLM 自动转译成文字，再委派给目标适配器 |
+| **vision 工具**（[`dsh-vision-free-eyes`](https://www.npmjs.com/package/dsh-vision-free-eyes) / `packages/vision-tool`） | 模型可对已知磁盘图片路径调用的 `vision(image, question)` 完整视觉理解工具（直连 GLM API；OCR 仅为可选模式） |
 | **vision-free-eyes skill**（`skill/`） | 教模型「何时 / 怎么用」视觉能力的指令文件 |
 
 ### 两个插件如何配合
@@ -115,7 +118,7 @@ DSH Web GUI 预检（检查所选模型的 inputModalities）
 
 ### 通过 npm 安装（推荐）
 
-两个包发布到 npm 后（`dsh-vision-free-eyes` + `dsh-vision-proxy-route`）：
+两个包已发布到 npm（[`dsh-vision-free-eyes`](https://www.npmjs.com/package/dsh-vision-free-eyes) + [`dsh-vision-proxy-route`](https://www.npmjs.com/package/dsh-vision-proxy-route)）：
 
 ```sh
 dsh plugin --profile web add dsh-vision-free-eyes dsh-vision-proxy-route
@@ -232,7 +235,7 @@ llm-pi-ai:
 ## 兼容性
 
 - 精确兼容：DSH `0.1.0-rc.8`、`0.1.1-rc.1`、`0.1.1-rc.2`、`0.1.2-rc.1`、`0.2.1-rc.2`；CI 对每个版本创建一次性 Web Profile，完成两个 Bundle 的安装、配置合成、真实服务启动和卸载。
-- 当前修复版本：`dsh-vision-free-eyes@0.1.5`、`dsh-vision-proxy-route@0.1.5`。
+- 当前版本：[`dsh-vision-free-eyes@0.1.5`](https://www.npmjs.com/package/dsh-vision-free-eyes)、[`dsh-vision-proxy-route@0.1.5`](https://www.npmjs.com/package/dsh-vision-proxy-route)。
 - 支持范围：`>=0.1.0-rc.8 <0.3.0`；该范围同时声明在 npm manifest 的标准 `engines.dsh` 和 `dsh.compatibility.dsh`，未列出的版本只有范围声明，不作为精确兼容证据。
 - 两个 Bundle 只使用 DSH 注入的 `tools` / `llm` / `attachments` 服务契约，不安装、替换或直接导入任何 `@deepseek-ai/*` 官方运行时包。
 - ⚠️ `ctx.llm.registerAdapter`、`resolveModel.inputModalities`、`ctx.llm.registration(provider).adapter`、`ctx.attachments.readImage` 仍是版本敏感接口；新增 DSH 版本必须先通过同一套一次性 Profile 验收，再加入精确矩阵。
