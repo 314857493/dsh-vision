@@ -1,0 +1,50 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 发布 dsh-vision-free-eyes (vision-tool)
+        run: |
+          LOCAL_VERSION=$(node -p "JSON.parse(fs.readFileSync('package.json', 'utf8')).version")
+          REMOTE_VERSION=$(npm view dsh-vision-free-eyes version 2>/dev/null || true)
+          echo "dsh-vision-free-eyes: local=$LOCAL_VERSION, remote=$REMOTE_VERSION"
+          if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+            echo "Publishing dsh-vision-free-eyes@$LOCAL_VERSION..."
+            npm publish --provenance --access public
+          else
+            echo "dsh-vision-free-eyes@$LOCAL_VERSION already published, skipping."
+          fi
+        working-directory: packages/vision-tool
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 发布 dsh-vision-proxy-route (vision-route)
+        run: |
+          LOCAL_VERSION=$(node -p "JSON.parse(fs.readFileSync('package.json', 'utf8')).version")
+          REMOTE_VERSION=$(npm view dsh-vision-proxy-route version 2>/dev/null || true)
+          echo "dsh-vision-proxy-route: local=$LOCAL_VERSION, remote=$REMOTE_VERSION"
+          if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+            echo "Publishing dsh-vision-proxy-route@$LOCAL_VERSION..."
+            npm publish --provenance --access public
+          else
+            echo "dsh-vision-proxy-route@$LOCAL_VERSION already published, skipping."
+          fi
+        working-directory: packages/vision-route
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
