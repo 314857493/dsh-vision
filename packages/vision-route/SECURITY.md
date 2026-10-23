@@ -25,7 +25,7 @@ bounded capabilities:
 
 Verified evidence is limited to package tests plus disposable Web Profile
 install, config composition, cold start, and uninstall on DSH `0.1.0-rc.8`,
-`0.1.1-rc.1`, and `0.1.1-rc.2`. Rollback, a real user Profile, Windows runtime,
+`0.1.1-rc.1`, `0.1.1-rc.2`, `0.1.2-rc.1`, and `0.2.1-rc.2`. Rollback, a real user Profile, Windows runtime,
 an image request with a real GLM key, and an independent security audit remain
 unverified. These are separate gates and must not be inferred from the partial
 evidence above.
