@@ -18,6 +18,7 @@ const supportedReleases = new Set([
   '0.1.1-rc.1',
   '0.1.1-rc.2',
   '0.1.2-rc.1',
+  '0.2.1-rc.2',
 ])
 const release = process.argv[2]
 if (!supportedReleases.has(release)) {
@@ -108,9 +109,9 @@ async function startWebProfile() {
 function assertManifestContract() {
   for (const packagePath of packagePaths) {
     const manifest = JSON.parse(readFileSync(join(packagePath, 'package.json'), 'utf8'))
-    assert.equal(manifest.version, '0.1.4')
+    assert.equal(manifest.version, '0.1.5')
     assert.equal(manifest.engines?.node, '>=22')
-    assert.equal(manifest.engines?.dsh, '>=0.1.0-rc.8 <0.2.0')
+    assert.equal(manifest.engines?.dsh, '>=0.1.0-rc.8 <0.3.0')
     assert.equal(manifest.dsh?.compatibility?.dsh, manifest.engines.dsh)
     assert.deepEqual(manifest.dsh?.compatibility?.profiles, ['web'])
     assert.equal(manifest.dsh?.compatibility?.dshReleases?.[release], 'compatible')
